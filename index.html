@@ -103,6 +103,9 @@
         <div class="btn-container">
             <button type="button" onclick="submitTest()">결과 확인하기</button>
         </div>
+        <p style="text-align: center; font-size: 13px; color: #95a5a6; margin-top: 30px; margin-bottom: 0;">
+            🔒 본 자가진단은 익명으로 진행되며, 수집된 데이터는 통계 분석 및 전시 목적으로만 사용됩니다.
+        </p>
     </form>
 
     <div id="result-section">
@@ -122,7 +125,7 @@
             document.getElementById('diagnosis-form').style.display = 'none';
             document.getElementById('result-section').style.display = 'block';
             document.getElementById('result-text').innerHTML = 
-                "이미 자가진단을 완료하셨습니다.<br><br><span style='font-size:14px; color:#7f8c8d; font-weight:normal;'>공정하고 정확한 통계를 위해 1인 1회만 참여 가능합니다.</span>";
+                "이미 자가진단을 완료하셨습니다.<br><br><span style='font-size:14px; color:#7f8c8d; font-weight:normal;'>정확한 통계를 위해 1인 1회만 참여 가능합니다.</span>";
         }
     };
 
