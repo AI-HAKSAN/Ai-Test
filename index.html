@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 의존도 자가진단 테스트</title>
+    <style>
+        body {
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p.desc {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .question-box {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .question-box label {
+            cursor: pointer;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #result-section {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f8f5;
+            border: 2px solid #2ecc71;
+            border-radius: 8px;
+            text-align: center;
+        }
+        #result-section h2 {
+            color: #27ae60;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🤖 AI 의존도 자가진단 테스트</h1>
+    <p class="desc">해당하는 항목에 체크하고 결과를 확인해보세요.</p>
+
+    <form id="diagnosis-form">
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> AI 없이 과제, 업무를 수행하기 어렵다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> AI 생성 결과물을 신뢰하며 사실 확인을 생략한다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> AI와 대화하는 것이 사람과 대화하는 것보다 즐겁다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> 속마음을 털어놓을 수 있는 대상이 AI뿐이라고 느낀다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> 불안하거나 외로울 때 AI에게 먼저 감정을 표현한다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> 친구나 가족보다 AI에게 더 자주 감정을 표현하게 된다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> AI가 나를 진짜로 이해하고 있다고 느껴질 때가 있다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> AI앱을 삭제하거나 멈추는 것이 불안하게 느껴진다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> AI의 반응을 기다리는 시간이 길어질수록 집중이 어려워진다.</label></div>
+        <div class="question-box"><label><input type="checkbox" name="q" value="1"> 인간관계에서 상처받기 싫어 AI와의 대화에 집중하게 된다.</label></div>
+
+        <div class="btn-container">
+            <button type="button" onclick="submitTest()">결과 확인하기</button>
+        </div>
+    </form>
+
+    <div id="result-section">
+        <h2>진단 결과</h2>
+        <p id="result-text" style="font-size: 18px; font-weight: bold;"></p>
+    </div>
+</div>
+
+<script>
+    // ★ [중요] 아까 구글 Apps Script에서 복사한 '웹 앱 URL'을 아래 따옴표 사이에 넣으세요!
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHg4lVyqJzyNMyV5UeMiRuFHgD1p2A901aziMZyupYgMQ2r3lpx-mRq7SkRvapt1zbZA/exec';
+
+    function submitTest() {
+        const checkboxes = document.querySelectorAll('input[name="q"]:checked');
+        const count = checkboxes.length;
+
+        let resultGroup = "";
+        if (count <= 2) {
+            resultGroup = "AI 일반 사용자군 (1~2개)";
+        } else if (count <= 4) {
+            resultGroup = "AI 잠재적 위험군 (3~4개)";
+        } else if (count <= 6) {
+            resultGroup = "AI 중독 고위험군 (5~6개)";
+        } else {
+            resultGroup = "내가 AI 중독?! 전문가와의 상담이 필요해요! (7개 이상)";
+        }
+
+        // 화면에 즉시 결과 표시
+        document.getElementById('result-text').innerHTML = 
+            `총 체크 개수: <span style="color:#e74c3c;">${count}개</span><br><br>${resultGroup}`;
+        document.getElementById('result-section').style.display = 'block';
+        
+        // 결과 쪽으로 부드럽게 스크롤 이동
+        document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
+
+        // 구글 시트로 데이터 백그라운드 전송
+        const payload = {
+            count: count,
+            result: resultGroup
+        };
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // 구글 시트 CORS 이슈 우회
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        }).catch(error => {
+            console.error('데이터 전송 중 오류 발생:', error);
+        });
+    }
+</script>
+
+</body>
+</html>
