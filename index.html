@@ -112,11 +112,29 @@
 </div>
 
 <script>
-    // ★ [중요] 아까 구글 Apps Script에서 복사한 '웹 앱 URL'을 아래 따옴표 사이에 넣으세요!
+    // ★ [중요] 본인의 구글 Apps Script 웹 앱 URL을 넣으세요
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHg4lVyqJzyNMyV5UeMiRuFHgD1p2A901aziMZyupYgMQ2r3lpx-mRq7SkRvapt1zbZA/exec';
+
+    // 페이지가 열릴 때 이미 참여했는지 확인
+    window.onload = function() {
+        if (localStorage.getItem('ai_test_completed') === 'true') {
+            // 이미 참여했다면 폼을 숨기고 완료 메시지 표시
+            document.getElementById('diagnosis-form').style.display = 'none';
+            document.getElementById('result-section').style.display = 'block';
+            document.getElementById('result-text').innerHTML = 
+                "이미 자가진단을 완료하셨습니다.<br><br><span style='font-size:14px; color:#7f8c8d; font-weight:normal;'>공정하고 정확한 통계를 위해 1인 1회만 참여 가능합니다.</span>";
+        }
+    };
 
     function submitTest() {
         const checkboxes = document.querySelectorAll('input[name="q"]:checked');
+        
+        // 최소 1개 이상 체크했는지 확인 (선택사항)
+        if (checkboxes.length === 0) {
+            alert("최소 1개 이상 체크해주세요!");
+            return;
+        }
+
         const count = checkboxes.length;
 
         let resultGroup = "";
@@ -130,12 +148,15 @@
             resultGroup = "내가 AI 중독?! 전문가와의 상담이 필요해요! (7개 이상)";
         }
 
+        // 학생 스마트폰에 '참여 완료' 도장 찍기 (중복 방지)
+        localStorage.setItem('ai_test_completed', 'true');
+
         // 화면에 즉시 결과 표시
+        document.getElementById('diagnosis-form').style.display = 'none'; // 설문지 숨기기
         document.getElementById('result-text').innerHTML = 
             `총 체크 개수: <span style="color:#e74c3c;">${count}개</span><br><br>${resultGroup}`;
         document.getElementById('result-section').style.display = 'block';
         
-        // 결과 쪽으로 부드럽게 스크롤 이동
         document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
 
         // 구글 시트로 데이터 백그라운드 전송
@@ -146,7 +167,7 @@
 
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors', // 구글 시트 CORS 이슈 우회
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -156,6 +177,5 @@
         });
     }
 </script>
-
 </body>
 </html>
